@@ -1,5 +1,7 @@
 package com.yungnickyoung.minecraft.yungsextras.world.feature.desert;
 
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.MapCodec;
 import com.google.common.collect.Lists;
 import com.yungnickyoung.minecraft.yungsextras.module.FeatureProcessorModule;
 import com.yungnickyoung.minecraft.yungsextras.world.config.DesertWellFeatureConfiguration;
@@ -12,7 +14,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import com.yungnickyoung.minecraft.yungsextras.world.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 
@@ -20,8 +22,17 @@ import java.util.List;
 
 
 public class DesertWellFeature extends AbstractNbtFeature<DesertWellFeatureConfiguration> {
-    public DesertWellFeature() {
-        super(DesertWellFeatureConfiguration.CODEC);
+    public static final MapCodec<DesertWellFeature> CODEC = RecordCodecBuilder.mapCodec(builder -> builder
+            .group(DesertWellFeatureConfiguration.CODEC.fieldOf("config").forGetter(feature -> feature.config))
+            .apply(builder, DesertWellFeature::new));
+
+    public DesertWellFeature(DesertWellFeatureConfiguration config) {
+        super(config);
+    }
+
+    @Override
+    public MapCodec<DesertWellFeature> codec() {
+        return CODEC;
     }
 
     /**

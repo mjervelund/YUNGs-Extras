@@ -5,9 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yungnickyoung.minecraft.yungsextras.YungsExtrasCommon;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
-public class DesertWellFeatureConfiguration implements FeatureConfiguration {
+public class DesertWellFeatureConfiguration {
     public static final Codec<DesertWellFeatureConfiguration> CODEC = RecordCodecBuilder.create((codecBuilder) -> codecBuilder
             .group(
                     Identifier.CODEC.fieldOf("location").forGetter(DesertWellFeatureConfiguration::getLocation),

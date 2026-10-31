@@ -1,5 +1,6 @@
 package com.yungnickyoung.minecraft.yungsextras.world.feature;
 
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import com.mojang.serialization.Codec;
 import com.yungnickyoung.minecraft.yungsextras.YungsExtrasCommon;
 import com.yungnickyoung.minecraft.yungsextras.world.processor.INbtFeatureProcessor;
@@ -8,7 +9,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
@@ -16,12 +16,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class AbstractNbtFeature<C extends FeatureConfiguration> extends Feature<C> {
+public abstract class AbstractNbtFeature<C> implements Feature {
     protected List<INbtFeatureProcessor> processors;
+    protected final C config;
 
-    public AbstractNbtFeature(Codec<C> codec) {
-        super(codec);
+    public AbstractNbtFeature(C config) {
+        this.config = config;
         this.processors = useProcessors();
+    }
+
+    /** Subclasses implement the placement using the old-style context. */
+    public abstract boolean place(FeaturePlaceContext<C> context);
+
+    @Override
+    public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
+        return this.place(new FeaturePlaceContext<>(level, generator, random, origin, this.config));
     }
 
     /**
@@ -52,7 +61,7 @@ public abstract class AbstractNbtFeature<C extends FeatureConfiguration> extends
             BlockPos centerPos,
             StructurePlaceSettings placement
     ) {
-        Optional<StructureTemplate> templateOptional = level.getLevel().getStructureManager().get(id);
+        Optional<StructureTemplate> templateOptional = level.getLevel().getStructureTemplateManager().get(id);
 
         if (templateOptional.isEmpty()) { // Unsuccessful creation. Name is probably invalid.
             YungsExtrasCommon.LOGGER.warn("Failed to create invalid feature {}", id);
@@ -102,7 +111,7 @@ public abstract class AbstractNbtFeature<C extends FeatureConfiguration> extends
             BlockPos cornerPos,
             StructurePlaceSettings placement
     ) {
-        Optional<StructureTemplate> templateOptional = level.getLevel().getStructureManager().get(id);
+        Optional<StructureTemplate> templateOptional = level.getLevel().getStructureTemplateManager().get(id);
 
         if (templateOptional.isEmpty()) { // Unsuccessful creation. Name is probably invalid.
             YungsExtrasCommon.LOGGER.warn("Failed to create invalid feature {}", id);

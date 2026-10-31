@@ -1,5 +1,7 @@
 package com.yungnickyoung.minecraft.yungsextras.world.feature.swamp;
 
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.MapCodec;
 
 import com.yungnickyoung.minecraft.yungsextras.world.config.IdentifierFeatureConfiguration;
 import net.minecraft.core.BlockPos;
@@ -7,15 +9,24 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import com.yungnickyoung.minecraft.yungsextras.world.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 
 
 
 public class SwampChurchFeature extends AbstractSwampFeature<IdentifierFeatureConfiguration> {
-    public SwampChurchFeature() {
-        super(IdentifierFeatureConfiguration.CODEC);
+    public static final MapCodec<SwampChurchFeature> CODEC = RecordCodecBuilder.mapCodec(builder -> builder
+            .group(IdentifierFeatureConfiguration.CODEC.fieldOf("config").forGetter(feature -> feature.config))
+            .apply(builder, SwampChurchFeature::new));
+
+    public SwampChurchFeature(IdentifierFeatureConfiguration config) {
+        super(config);
+    }
+
+    @Override
+    public MapCodec<SwampChurchFeature> codec() {
+        return CODEC;
     }
 
     @Override

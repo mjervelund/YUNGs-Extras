@@ -1,5 +1,7 @@
 package com.yungnickyoung.minecraft.yungsextras.world.feature.desert;
 
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.MapCodec;
 import com.yungnickyoung.minecraft.yungsextras.world.config.IdentifierFeatureConfiguration;
 import com.yungnickyoung.minecraft.yungsextras.world.feature.AbstractNbtFeature;
 import net.minecraft.core.BlockPos;
@@ -9,15 +11,24 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import com.yungnickyoung.minecraft.yungsextras.world.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 
 
 
 public class DesertObeliskFeature extends AbstractNbtFeature<IdentifierFeatureConfiguration> {
-    public DesertObeliskFeature() {
-        super(IdentifierFeatureConfiguration.CODEC);
+    public static final MapCodec<DesertObeliskFeature> CODEC = RecordCodecBuilder.mapCodec(builder -> builder
+            .group(IdentifierFeatureConfiguration.CODEC.fieldOf("config").forGetter(feature -> feature.config))
+            .apply(builder, DesertObeliskFeature::new));
+
+    public DesertObeliskFeature(IdentifierFeatureConfiguration config) {
+        super(config);
+    }
+
+    @Override
+    public MapCodec<DesertObeliskFeature> codec() {
+        return CODEC;
     }
 
     @Override

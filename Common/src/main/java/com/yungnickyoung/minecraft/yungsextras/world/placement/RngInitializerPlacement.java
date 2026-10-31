@@ -7,7 +7,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.placement.PlacementContext;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
-import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 
 
 import java.util.stream.Stream;
@@ -18,16 +17,15 @@ import java.util.stream.Stream;
  */
 
 
-public class RngInitializerPlacement extends PlacementModifier {
+public class RngInitializerPlacement implements PlacementModifier {
     private static final RngInitializerPlacement INSTANCE = new RngInitializerPlacement();
-    public static final MapCodec<PlacementModifier> CODEC = MapCodec.unit(() -> INSTANCE);
+    public static final MapCodec<RngInitializerPlacement> CODEC = MapCodec.unit(() -> INSTANCE);
 
     public static RngInitializerPlacement randomize() {
         return INSTANCE;
     }
 
-    @Override
-    public Stream<BlockPos> getPositions(PlacementContext placementContext, RandomSource random, BlockPos pos) {
+    private Stream<BlockPos> positions(PlacementContext placementContext, RandomSource random, BlockPos pos) {
         long a = random.nextLong() | 1L;
         long b = random.nextLong() | 1L;
         random.setSeed(((pos.getX() * a * 341873128712L + 12412146) * (pos.getZ() * b * 132897987541L + 5813717)) ^ 423487234);
@@ -35,7 +33,12 @@ public class RngInitializerPlacement extends PlacementModifier {
     }
 
     @Override
-    public PlacementModifierType<?> type() {
-        return PlacementModifierTypeModule.RNG_INITIALIZER;
+    public void modify(PlacementContext placementContext, RandomSource randomSource, BlockPos blockPos, java.util.function.Consumer<BlockPos> output) {
+        positions(placementContext, randomSource, blockPos).forEach(output);
+    }
+
+    @Override
+    public MapCodec<? extends PlacementModifier> codec() {
+        return CODEC;
     }
 }

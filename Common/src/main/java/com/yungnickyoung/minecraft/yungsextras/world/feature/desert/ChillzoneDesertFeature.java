@@ -1,5 +1,7 @@
 package com.yungnickyoung.minecraft.yungsextras.world.feature.desert;
 
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.MapCodec;
 import com.yungnickyoung.minecraft.yungsextras.YungsExtrasCommon;
 import com.yungnickyoung.minecraft.yungsextras.world.feature.AbstractNbtFeature;
 import net.minecraft.core.BlockPos;
@@ -9,8 +11,8 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import com.yungnickyoung.minecraft.yungsextras.world.feature.FeaturePlaceContext;
+import com.yungnickyoung.minecraft.yungsextras.world.config.NoneFeatureConfiguration;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 
@@ -19,8 +21,17 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 public class ChillzoneDesertFeature extends AbstractNbtFeature<NoneFeatureConfiguration> {
     private static final Identifier ID = Identifier.fromNamespaceAndPath(YungsExtrasCommon.MOD_ID, "desert/misc/chillzone");
 
-    public ChillzoneDesertFeature() {
-        super(NoneFeatureConfiguration.CODEC);
+    public static final MapCodec<ChillzoneDesertFeature> CODEC = RecordCodecBuilder.mapCodec(builder -> builder
+            .group(NoneFeatureConfiguration.CODEC.fieldOf("config").forGetter(feature -> feature.config))
+            .apply(builder, ChillzoneDesertFeature::new));
+
+    public ChillzoneDesertFeature(NoneFeatureConfiguration config) {
+        super(config);
+    }
+
+    @Override
+    public MapCodec<ChillzoneDesertFeature> codec() {
+        return CODEC;
     }
 
     @Override
